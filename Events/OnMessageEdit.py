@@ -25,19 +25,20 @@ class OnMessageEdit(commands.Cog):
 
         else:
             channel = self.bot.get_channel(data[0])
-            embed = discord.Embed(
-                title="Message Edited!",
-                description=f"{config.TIME_EMOJI} **Time:** <t:{time}:f>\
-                    \n{config.USER_EMOJI} **Author:** {before.author.name if not before.author.global_name else before.author.global_name}\
-                    \n{config.CHANNEL_EMOJI} **Channel:** {before.channel.mention}\
-                    \n{config.MSG_EMOJI} **Message Contents**\nOriginal: {before.content}\nEdited: {after.content}",
-                color=discord.Color.magenta()
-            ).set_footer(
-                text="Attachements aren't supported yet."
-            )
-            
-            await channel.send(embed=embed)
-            return
+            if channel:
+                embed = discord.Embed(
+                    title="Message Edited!",
+                    description=f"{config.TIME_EMOJI} **Time:** <t:{time}:f>\
+                        \n{config.USER_EMOJI} **Author:** {before.author.name if not before.author.global_name else before.author.global_name}\
+                        \n{config.CHANNEL_EMOJI} **Channel:** {before.channel.mention}\
+                        \n{config.MSG_EMOJI} **Message Contents**\nOriginal: {before.content}\nEdited: {after.content}",
+                    color=discord.Color.magenta()
+                ).set_footer(
+                    text="Attachements aren't supported yet."
+                )
+                
+                await channel.send(embed=embed)
+                return
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(

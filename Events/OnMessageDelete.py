@@ -23,19 +23,20 @@ class OnMessageDelete(commands.Cog):
         
         else:
             channel = message.guild.get_channel(data[0])
-            embed = discord.Embed(
-                title="Message Deleted!",
-                description=f"{config.TIME_EMOJI} **Time:** <t:{time}:f>\
-                    \n{config.USER_EMOJI} **Author:** {message.author.name if not message.author.global_name else message.author.global_name}\
-                    \n{config.CHANNEL_EMOJI} **Channel:** {message.channel.mention}\
-                    \n{config.MSG_EMOJI} **Message Content:** {message.content}",
-                color=discord.Color.magenta()
-            ).set_footer(
-                text="Attachements aren't supported yet."
-            )
-            
-            await channel.send(embed=embed)
-            return
+            if channel:
+                embed = discord.Embed(
+                    title="Message Deleted!",
+                    description=f"{config.TIME_EMOJI} **Time:** <t:{time}:f>\
+                        \n{config.USER_EMOJI} **Author:** {message.author.name if not message.author.global_name else message.author.global_name}\
+                        \n{config.CHANNEL_EMOJI} **Channel:** {message.channel.mention}\
+                        \n{config.MSG_EMOJI} **Message Content:** {message.content}",
+                    color=discord.Color.magenta()
+                ).set_footer(
+                    text="Attachements aren't supported yet."
+                )
+                
+                await channel.send(embed=embed)
+                return
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(

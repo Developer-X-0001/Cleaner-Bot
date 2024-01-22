@@ -57,7 +57,6 @@ class NukeConfirm(View):
         now_time = datetime.datetime.now()
         cooldown = datetime.timedelta(days=15)
         future_time = now_time + cooldown
-        print(future_time.timestamp())
         self.database.execute(
             '''
                 INSERT INTO GuildSettings VALUES (
