@@ -1,4 +1,4 @@
-import aiosqlite
+import sqlite3
 import discord
 from discord import app_commands
 from discord.ext import commands
@@ -6,19 +6,12 @@ from discord.ext import commands
 class OnGuildRemove(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.database = sqlite3.connect("./Databases/Data.sqlite")
     
     @commands.Cog.listener()
     async def on_guild_remove(self, guild: discord.Guild):
-        await self.bot.database.execute(f"DELETE FROM AutoDeleteChannels WHERE guild_id = {guild.id}")
-        await self.bot.database.execute(f"DELETE FROM DataTransfer WHERE guild_id = {guild.id}")
-        await self.bot.database.execute(f"DELETE FROM NukeCooldowns WHERE guild_id = {guild.id}")
-        await self.bot.database.execute(f"DELETE FROM DefaultAmount WHERE guild_id = {guild.id}")
-        await self.bot.database.execute(f"DELETE FROM AuditChannels WHERE guild_id = {guild.id}")
-        await self.bot.database.execute(f"DELETE FROM PremiumGuilds WHERE guild_id = {guild.id}")
-        await self.bot.database.execute(f"DELETE FROM DefaultPins WHERE guild_id = {guild.id}")
-        await self.bot.database.execute(f"DELETE FROM BadwordFilter WHERE guild_id = {guild.id}")
-        await self.bot.database.execute(f"DELETE FROM NotificationView WHERE user_id = {guild.id}")
-        await self.bot.database.commit()
+        self.database.execute("DELETE FROM GuildSettings WHERE guild_id = ?", (guild.id,)).connection.commit()
+        return
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(

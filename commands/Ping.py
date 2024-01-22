@@ -1,4 +1,6 @@
+import config
 import discord
+
 from discord import app_commands
 from discord.ext import commands
 
@@ -13,21 +15,21 @@ class Ping(commands.Cog):
 
         if latency < 150:
             if latency < 75:
-                await interaction.followup.send(f"<:latency:954610357647851550> **Bot Latency:** <:signal5:954624490132873256> `{latency}`ms", ephemeral=True)
+                await interaction.followup.send(f"{config.LATENCY_EMOJI} **Bot Latency:** {config.SIGNAL_5_EMOJI} `{latency}`ms", ephemeral=True)
                 return
             else:
-                await interaction.followup.send(f"<:latency:954610357647851550> **Bot Latency:** <:signal4:954624489570844692>`{latency}`ms", ephemeral=True)
+                await interaction.followup.send(f"{config.LATENCY_EMOJI} **Bot Latency:** {config.SIGNAL_4_EMOJI} `{latency}`ms", ephemeral=True)
                 return
 
         if latency > 150:
             if latency > 300:
-                await interaction.followup.send(f"<:latency:954610357647851550> **Bot Latency:** <:signal1:954624489197559828>`{latency}`ms", ephemeral=True)
+                await interaction.followup.send(f"{config.LATENCY_EMOJI} **Bot Latency:** {config.SIGNAL_1_EMOJI} `{latency}`ms", ephemeral=True)
                 return
             if latency > 225:
-                await interaction.followup.send(f"<:latency:954610357647851550> **Bot Latency:** <:signal2:954624489340153906>`{latency}`ms", ephemeral=True)
+                await interaction.followup.send(f"{config.LATENCY_EMOJI} **Bot Latency:** {config.SIGNAL_2_EMOJI} `{latency}`ms", ephemeral=True)
                 return
             else:
-                await interaction.followup.send(f"<:latency:954610357647851550> **Bot Latency:** <:signal3:954624491558936596>`{latency}`ms", ephemeral=True)
+                await interaction.followup.send(f"{config.LATENCY_EMOJI} **Bot Latency:** {config.SIGNAL_3_EMOJI}`{latency}`ms", ephemeral=True)
                 return
 
 async def setup(bot: commands.Bot) -> None:

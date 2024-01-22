@@ -1,27 +1,41 @@
-import aiosqlite
-import datetime
+import config
+import sqlite3
 import discord
-from discord import app_commands
+import datetime
+
 from discord.ext import commands
 
 class OnMessageDelete(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.database = sqlite3.connect("./Databases/Data.sqlite")
     
     @commands.Cog.listener()
     async def on_message_delete(self, message: discord.Message):
         if message.author.bot:
             return
-        Time = datetime.datetime.now()
-        UpTime = Time.strftime("%d-%m-%Y %H:%M:%S")
+        
+        time = round(datetime.datetime.now().timestamp())
 
-        async with self.bot.database.execute(f"SELECT channel_id FROM AuditChannels WHERE guild_id = {message.guild.id}") as cursor:
-            data = await cursor.fetchone()
+        data = self.database.execute("SELECT audit_channel FROM GuildSettings WHERE guild_id = ?", (message.guild.id,)).fetchone()
         if data is None:
-            pass
+            return
+        
         else:
             channel = message.guild.get_channel(data[0])
-            await channel.send(embed= discord.Embed(title="Message Deleted!", description= f"<:time:954610357576548444> **Time** `{UpTime}`\n<:author:954610357761081424> **Author** {message.author.mention}\n<:channel:954457643227942923> **Channel** {message.channel.mention}\n<:messages:954610357773684837> **Message Content:** {message.content}", color=discord.Color.magenta()))
+            embed = discord.Embed(
+                title="Message Deleted!",
+                description=f"{config.TIME_EMOJI} **Time:** <t:{time}:f>\
+                    \n{config.USER_EMOJI} **Author:** {message.author.name if not message.author.global_name else message.author.global_name}\
+                    \n{config.CHANNEL_EMOJI} **Channel:** {message.channel.mention}\
+                    \n{config.MSG_EMOJI} **Message Content:** {message.content}",
+                color=discord.Color.magenta()
+            ).set_footer(
+                text="Attachements aren't supported yet."
+            )
+            
+            await channel.send(embed=embed)
+            return
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(

@@ -1,32 +1,27 @@
-import aiosqlite
-import datetime
+import sqlite3
 import discord
-from discord import app_commands
 from discord.ext import commands
 
 class OnMessage(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.database = sqlite3.connect("./Databases/BadwordsFilter.sqlite")
     
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
-        try:
-            async with self.bot.database.execute(f"SELECT words FROM BadwordFilter WHERE guild_id = {message.channel.guild.id}") as cursor1:
-                data = await cursor1.fetchone()
-            if data is None:
-                pass
-            else:
-                try:
-                    words = data[0].split(",")
-                    for word in words:
-                        if word in message.content:
-                            await message.delete()
-                except:
-                    word = data[0]
-                    if word in message.content:
-                        await message.delete()
-        except:
-            pass
+        if message.author.bot:
+            return
+        
+        self.database.execute(f"CREATE TABLE IF NOT EXISTS '{message.guild.id}' (word TEXT)")
+        data = self.database.execute(f"SELECT word FROM '{message.guild.id}'").fetchall()
+        if data == []:
+            return
+        
+        else:
+            for word in data:
+                if word[0] in message.content:
+                    await message.delete()
+                    return
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(

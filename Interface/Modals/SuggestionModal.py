@@ -1,7 +1,9 @@
-import traceback
-import aiosqlite
+import config
+import sqlite3
 import discord
-from Interface.Buttons.SuggestionButtons import SuggestionButtons
+
+from Interface.Buttons.ReportsAndSuggestionsButtons import ReportsAndSuggestionsView
+from Interface.Buttons.ErrorReportButton import ErrorReportView
 
 class SubSuggestion(discord.ui.Modal, title="Suggestion"):
     heading = discord.ui.TextInput(
@@ -21,23 +23,25 @@ class SubSuggestion(discord.ui.Modal, title="Suggestion"):
     )
 
     async def on_submit(self, interaction: discord.Interaction):
-        channel = interaction.client.get_channel(1004064457204437152)
+        database = sqlite3.connect("./Databases/ReportsAndSuggestionsData.sqlite")
+        channel = interaction.client.get_channel(config.SUGGESTIONS_CHANNEL_ID)
         suggestion_embed = discord.Embed(
             title=self.heading,
             description=self.suggestion,
             color=discord.Color.magenta()
-        )
-        suggestion_embed.set_author(name=interaction.user, icon_url=interaction.user.avatar)
-        suggestion_embed.set_thumbnail(url=interaction.guild.icon.url)
-        suggestion_embed.set_footer(text=f"Sent from, Guild: {interaction.guild.name} | Members: {interaction.guild.member_count}")
+        ).set_author(
+            name=interaction.user,
+            icon_url=interaction.user.avatar
+        ).set_footer(text=f"Sent from, Guild: {interaction.guild.name} | Members: {interaction.guild.member_count}")
+
+        if interaction.guild.icon:
+            suggestion_embed.set_thumbnail(url=interaction.guild.icon.url)
         
-        msg = await channel.send(embed=suggestion_embed, view=SuggestionButtons())
-        await interaction.client.database.execute(f'INSERT INTO ReportsAndSuggestions VALUES ({interaction.guild.id}, {interaction.user.id}, {msg.id}, "{self.heading}", "{self.suggestion}", 0, 0)')
-        await interaction.response.send_message("<:thankyou:966151700018765835> Your suggestion has been recorded!", ephemeral=True)
-        await interaction.client.database.commit()
+        msg = await channel.send(embed=suggestion_embed, view=ReportsAndSuggestionsView())
+        database.execute("INSERT INTO ReportsAndSuggestions VALUES (?, ?, ?, ?, ?)", (interaction.guild.id, interaction.user.id, msg.id, self.heading, self.suggestion,)).connection.commit()
+        await interaction.response.send_message(f"{config.SENT_EMOJI} Your suggestion has been recorded!", ephemeral=True)
         return
 
     async def on_error(self, interaction: discord.Interaction, error: Exception):
-        await interaction.response.send_message("<:error:954610357761105980> Oops! Something went wrong.", ephemeral=True)
-
-        traceback.print_tb(error.__traceback__)
+        await interaction.response.send_message(embed=discord.Embed(title="Unexpected Error Occured", description=f"{config.ERROR_EMOJI} I am unable to proceed due to the following error:\n\n__**Error Message:**__\n```cpp\n{error}\n```", color=discord.Color.red()), view=ErrorReportView(cmd="/suggestion", error_msg=error), ephemeral=True)
+        return

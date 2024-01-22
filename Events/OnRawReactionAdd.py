@@ -13,6 +13,7 @@ class OnRawReactionAdd(commands.Cog):
             channel = self.bot.get_channel(payload.channel_id)
             message = await channel.fetch_message(payload.message_id)
             await message.delete()
+            return
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(

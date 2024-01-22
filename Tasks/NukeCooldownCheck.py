@@ -1,4 +1,4 @@
-import aiosqlite
+import sqlite3
 import datetime
 from discord.ext import commands, tasks
 
@@ -6,13 +6,13 @@ class NukeCooldownCheck(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.nuke_cooldown_check.start()
+        self.database = sqlite3.connect("./Databases/Data.sqlite")
 
     @tasks.loop(seconds=1)
     async def nuke_cooldown_check(self):
         await self.bot.wait_until_ready()
-        async with self.bot.database.execute(f"SELECT guild_id, timestamp FROM NukeCooldowns WHERE status = 'running'") as cursor:
-            data = await cursor.fetchall()
-        if data is None:
+        data = self.database.execute("SELECT guild_id, nuke_cooldown FROM GuildSettings").fetchall()
+        if data == []:
             return
         else:
             for entry in data:
@@ -20,9 +20,8 @@ class NukeCooldownCheck(commands.Cog):
                 time = datetime.datetime.fromtimestamp(entry[1]).strftime("%Y-%m-%d")
                 now_time = datetime.datetime.now().strftime("%Y-%m-%d")
 
-                if now_time == time:
-                    await self.bot.database.execute(f"DELETE FROM NukeCooldowns WHERE guild_id = {guild.id}")
-                    await self.bot.database.commit()
+                if now_time >= time:
+                    self.database.execute("UPDATE GuildSettings SET nuke_cooldown = 0 WHERE guild_id = ?", (guild.id,)).connection.commit()
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(

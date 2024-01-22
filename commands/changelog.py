@@ -1,5 +1,5 @@
 import discord
-import aiosqlite
+import sqlite3
 import config
 
 from discord import app_commands
@@ -10,12 +10,11 @@ from Interface.Buttons.ChangelogButtons import ChangelogButtons, ChangelogButton
 class Changelog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.database = sqlite3.connect("./Databases/Data.sqlite")
 
     @app_commands.command(name="changelog", description="See what's new")
     async def help(self, interaction: discord.Interaction):
-        await self.bot.database.execute("CREATE TABLE IF NOT EXISTS NotificationView (user_id, status, PRIMARY KEY (user_id))")
-        async with self.bot.database.execute(f"SELECT status FROM NotificationView WHERE user_id = {interaction.user.id}") as cursor:
-            data = await cursor.fetchone()
+        data = self.database.execute("SELECT status FROM NotificationView WHERE used_id = ?", (interaction.user.id,)).fetchone()
         if data is None:
             resp_embed = discord.Embed(
                 title="Where do you want to receive the changelog?",
@@ -23,7 +22,8 @@ class Changelog(commands.Cog):
                 color=discord.Color.magenta()
             )
             resp_embed.set_footer(text=f"Cleaner#8788 v{config.BOT_VERSION}")
-            await interaction.response.send_message(content="<:notif:1013118962873147432> **You have an unread notification!**", embed=resp_embed, view=ChangelogButtonsWithNotif(), ephemeral=True)
+            await interaction.response.send_message(content=f"{config.NOTIFICATION_EMOJI} **You have an unread notification!**", embed=resp_embed, view=ChangelogButtonsWithNotif(), ephemeral=True)
+            return
         else:
             resp_embed = discord.Embed(
                 title="Where do you want to receive the changelog?",
@@ -32,6 +32,7 @@ class Changelog(commands.Cog):
             )
             resp_embed.set_footer(text=f"Cleaner#8788 v{config.BOT_VERSION}")
             await interaction.response.send_message(embed=resp_embed, view=ChangelogButtons(), ephemeral=True)
+            return
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(
