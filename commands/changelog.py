@@ -13,8 +13,8 @@ class Changelog(commands.Cog):
         self.database = sqlite3.connect("./Databases/Data.sqlite")
 
     @app_commands.command(name="changelog", description="See what's new")
-    async def help(self, interaction: discord.Interaction):
-        data = self.database.execute("SELECT status FROM NotificationView WHERE used_id = ?", (interaction.user.id,)).fetchone()
+    async def changelog(self, interaction: discord.Interaction):
+        data = self.database.execute("SELECT status FROM NotificationView WHERE user_id = ?", (interaction.user.id,)).fetchone()
         if data is None:
             resp_embed = discord.Embed(
                 title="Where do you want to receive the changelog?",

@@ -186,7 +186,7 @@ class Settings(commands.Cog):
             title=f"Cleaner Configuration for {interaction.guild.name}",
             color=discord.Color.magenta()
         )
-        embed.set_thumbnail(url="https://i.imgur.com/T12D7JH.png")
+        embed.set_thumbnail(url=config.CLEANER_ICON)
         embed.add_field(name="Audit Channel", value=f"{audit_data}", inline=False)
         embed.add_field(name="Default Cleaning Amount", value=f"{amount_data}", inline=False)
         embed.add_field(name="Default Pins Condition", value=f"{pins_data}", inline=False)

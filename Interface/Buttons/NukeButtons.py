@@ -36,7 +36,7 @@ class NukeButtons(View):
             color=discord.Color.magenta()
         )
         embed.set_footer(text=f"The process will take about {eta} approx.")
-        embed.set_thumbnail(url="https://i.imgur.com/T12D7JH.png")
+        embed.set_thumbnail(url=config.CLEANER_ICON)
 
         await interaction.response.edit_message(content=None, embed=embed, view=NukeConfirm())
         return

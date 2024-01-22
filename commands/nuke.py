@@ -24,7 +24,7 @@ class Nuke(commands.Cog):
                     color=discord.Color.magenta()
                 )
                 embed.set_footer(text="This command can be used once per 15 days.")
-                embed.set_thumbnail(url="https://i.imgur.com/T12D7JH.png")
+                embed.set_thumbnail(url=config.CLEANER_ICON)
 
                 await interaction.followup.send(embed=embed, view=NukeButtons())
                 return
@@ -40,7 +40,7 @@ class Nuke(commands.Cog):
                     color=discord.Color.magenta()
                 )
                 embed.set_footer(text="This command can be used once per 15 days.")
-                embed.set_thumbnail(url="https://i.imgur.com/T12D7JH.png")
+                embed.set_thumbnail(url=config.CLEANER_ICON)
 
                 await interaction.followup.send(embed=embed)
                 return
