@@ -25,26 +25,27 @@ class Settings(commands.Cog):
     ])
     @app_commands.checks.has_permissions(administrator=True)
     async def pins(self, interaction: discord.Interaction, default: app_commands.Choice[str]):
+        await interaction.response.defer(ephemeral=True)
         data = self.database.execute("SELECT default_pins FROM GuildSettings WHERE guild_id = ?", (interaction.guild.id,)).fetchone()
 
         if default.value == "delete":
             if data is None:
                 self.database.execute("INSERT INTO GuildSettings VALUES (?, 5, NULL, 0, ?, ?)", (interaction.guild.id, 'delete', 'inactive',)).connection.commit()
-                await interaction.response.send_message(content=f"{config.DONE_EMOJI} Default pins check condition is set to **Delete**, your pinned messages will be deleted.", ephemeral=True)
+                await interaction.followup.send(content=f"{config.DONE_EMOJI} Default pins check condition is set to **Delete**, your pinned messages will be deleted.")
                 return
             else:
                 self.database.execute("UPDATE GuildSettings SET default_pins = ? WHERE guild_id = ?", ('delete', interaction.guild.id,)).connection.commit()
-                await interaction.response.send_message(content=f"{config.DONE_EMOJI} Default pins check condition has been updated to **Delete**, your pinned messages will be deleted.", ephemeral=True)
+                await interaction.followup.send(content=f"{config.DONE_EMOJI} Default pins check condition has been updated to **Delete**, your pinned messages will be deleted.")
                 return
         
         if default.value == "keep":
             if data is None:
                 self.database.execute("INSERT INTO GuildSettings VALUES (?, 5, NULL, 0, ?, ?)", (interaction.guild.id, 'keep', 'inactive',)).connection.commit()
-                await interaction.response.send_message(content=f"{config.DONE_EMOJI} Default pins check condition is set to **Keep**, now your pinned messages won't be deleted.", ephemeral=True)
+                await interaction.followup.send(content=f"{config.DONE_EMOJI} Default pins check condition is set to **Keep**, now your pinned messages won't be deleted.")
                 return
             else:
                 self.database.execute("UPDATE GuildSettings SET default_pins = ? WHERE guild_id = ?", ('keep', interaction.guild.id,)).connection.commit()
-                await interaction.response.send_message(content=f"{config.DONE_EMOJI} Default pins check condition has been updated to **Keep**, now your pinned messages won't be deleted.", ephemeral=True)
+                await interaction.followup.send(content=f"{config.DONE_EMOJI} Default pins check condition has been updated to **Keep**, now your pinned messages won't be deleted.")
                 return
 
     @pins.error
@@ -101,6 +102,7 @@ class Settings(commands.Cog):
     @app_commands.describe(amount="The amount you want to set as default cleaning amount.")
     @app_commands.checks.has_permissions(administrator=True)
     async def set_amount(self, interaction: discord.Interaction, amount: int):
+        await interaction.response.defer(ephemeral=True)
         if amount > 100:
             await interaction.followup.send(content=f"{config.ERROR_EMOJI} Default amount can't be greater than `100`!")
             return
