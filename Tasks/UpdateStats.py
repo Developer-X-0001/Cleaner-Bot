@@ -11,6 +11,7 @@ class UpdateStats(commands.Cog):
 
     @tasks.loop(minutes=30)
     async def update_channels(self):
+        await self.bot.wait_until_ready()
         latency_channel = self.bot.get_channel(config.LATENCY_CHANNEL_ID)
         server_count_channel = self.bot.get_channel(config.SERVERCOUNT_CHANNEL_ID)
         shard_count_channel = self.bot.get_channel(config.SHARDCOUNT_CHANNEL_ID)
