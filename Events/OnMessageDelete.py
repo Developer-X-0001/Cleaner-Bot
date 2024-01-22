@@ -37,6 +37,9 @@ class OnMessageDelete(commands.Cog):
                 
                 await channel.send(embed=embed)
                 return
+            
+            else:
+                return
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(
