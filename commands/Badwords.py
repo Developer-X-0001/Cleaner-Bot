@@ -47,15 +47,15 @@ class Audit(commands.Cog):
             formatted_added_words += f"{counter}. {j}\n"
         
         embed = discord.Embed(
-            title="Updated Blacklisted Words for {}".format(interaction.guild.name),
-            description="From a total of `{}` word(s), I've added `{}` while the other `{}` words are already blacklisted.".format(len(word_list), len(words_added), len(words_existing)),
+            title=f"Updated Blacklisted Words for {interaction.guild.name}",
+            description=f"From a total of `{len(word_list)}` word(s), I've added `{len(words_added)}` while the other `{len(words_existing)}` words are already blacklisted.",
             color=discord.Color.magenta()
         ).add_field(
-            name="Words Added ({}):".format(len(words_added)),
+            name=f"Words Added ({len(words_added)}):",
             value=f"```\n{formatted_added_words}\n```" if formatted_added_words != "" else "```\n \n```",
             inline=False
         ).add_field(
-            name="Words Ignored ({}):".format(len(words_existing)),
+            name=f"Words Ignored ({len(words_existing)}):",
             value=f"```\n{formatted_existing_words}\n```" if formatted_existing_words != "" else "```\n \n```",
             inline=False
         )
